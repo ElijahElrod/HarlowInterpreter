@@ -49,7 +49,7 @@ It looks just like a standard bedroom should look, a little untidy but not overl
 Scanning the room, you feel a vague sese of unease. It feels like it could be- it //should// be-your bedroom, but is it?
 If this is your room, why doesn't it feel like home?
 It feels familiar as you cast your eyes across each wall, like a bedroom from a beloved frequently-watched movie or a tv show, but at the same time- When you focus your eyes on any one single object, it almost seems to blur and shift flatly in front of you, like staring at a magic-eye puzzle too long and watching it turn back into a pattern on a page- as if whatever or whoever is causing this illusion  doesn't //quite// understand the details well enough to produce something wholly authentic, and is glossing over simple details and just hoping that no-one will look closely enough at anything to notice.
-You pull down the duvet and slide out of bed, slipping your feet into a pair of fluffy pig slippers you assume are yours. The carpet feels strange and sort of warm, almost organic under your slippered feet.
+You pull down the duvet and slide out of bed, slipping your feet into a pair of fluffy pig slippers you assume are yours. The carpet feels strange and sort of warm, almost organic(??) under your slippered feet.
 You crouch down and gingerly prod the soft pile. It feels just like a normal carpet, but when you lift your finger away it leaves an almost greasy sheen on your skin. Gross. Don't want to touch that again in a hurry.
 'Something is definitely not normal here', you think.
 Just as you stand back up, a folded sheet of paper on the desk in the corner catches your eye. Hmm. Better check that out, you think, and walk over to the other side of the room. 
@@ -64,8 +64,8 @@ You can also make out the sound of an air vent from inside the airing closet, an
 Actually, come to think of it, neither of those sounded safer than just staying put and waiting it out here. At least this place //felt// like a comfortable bedroom, and you were almost positive the  weird feelings this place was giving you were all just in your mind. Maybe it would be a better idea just to curl back up in that warm bed and see if you feel better after some more rest, or at least wait it out for awhile to see if maybe things started to feel more normal.
 
 (if: $takeshoes is true)[There are some shoes sitting on the end of the bed, so you pick them up.]
-(else-if: $takewater is true)[There is a glass of strange clear liquid on the bed. It might come in handy. Better take it with me]
-(else-if: $takejumper is true)[There is a sweatshirt lying crumpled on the bed. Better grab it in case it gets cold later or something.]
+(if: $takewater is true)[There is a glass of strange clear liquid on the bed. It might come in handy. Better take it with me]
+(if: $takejumper is true)[There is a sweatshirt lying crumpled on the bed. Better grab it in case it gets cold later or something.]
 (if: $takewater is true)[(if: $takeshoes is true)[(if: $takejumper is true)[(if: $mbedroom is true)[You don't fully understand why, but with the strange assortment of items packed in a bag you feel oddly prepared. Maybe you //will// make it home.]]]]
 
 You decide to:
@@ -100,10 +100,10 @@ You decide to...
 
 [[stay hidden in vents]]
 [[go down into hall]]
-(if: $mbedroom is true)[ [[peek into bedroom vent]] ] </tw-passagedata>
+(if: $mbedroom is true)[ [[peek into bedroom vent]] ]</tw-passagedata>
 <tw-passagedata pid="5" name="stay put for now" tags="" position="466,0">This room isnt //so// bad, and you decide that the best course of action is to stay scarce up here. Whatever's out there waiting for you could be way, way worse, and personally, you didn't want to take the chance to find out. Plus, spending a little more time in here would give you more time to look for some clues as to what exactly was going on and what you were doing here in the first place.
 This had to be some kind of crazy dream, right? Everything //seems// neaaaaaarly normal, but not //quite// convincing enough to fool you into thinking that everything is perfectly normal and okay.
-You plop back down on the bed and decide to take a closer look at the ceiling. It looks just like a normal ceiling, except distorted and //sliiiiiiightly// swollen. In the middle, there are patchy brown nicotine sta.ins from the people who used to live here. Like everything else in here, when you stare too hard it starts to shift uncomfortably from your gaze. It almost looks like its...throbbing, very, very gently. 
+You plop back down on the bed and decide to take a closer look at the ceiling. It looks just like a normal ceiling, except distorted and //sliiiiiiightly// swollen. In the middle, there are patchy brown nicotine stains from the people who used to live here. Like everything else in here, when you stare too hard it starts to shift uncomfortably from your gaze. It almost looks like its...throbbing, very, very gently. 
 You stand up on the bed and reach as high as you can, to see if you can touch it and confirm your suspicions, but its too high to reach. Even so, you can feel a strange heat emanating from it just hitting the air around your fingertips. Huh?
 The room doesn't feel particularly warm, but when you lift your hand up near the ceiling, you can feel a definite heat in the air.
 You decide to leave that question unanswered for now. You don't have time to waste wondering about strange ceilings, not right now. Time to find some clues and get the hell out of here, ASAP.
@@ -179,7 +179,7 @@ SHHHHHHHHHHHH. EVERYTHING IS OKAY.
 						
 (set: $end1 to true)
 ENDING= BAD DREAM(????)
-[[EPILOGUE]]</tw-passagedata>
+[[EPILOGUE]] </tw-passagedata>
 <tw-passagedata pid="6" name="climb down drain" tags="" position="259,269">You decide to grab onto the drain at the edge of the house and shimmy down it onto the roof of the porch. You really, really dont want to risk trying the attic, and after the leap of faith you just took out the bedroom window this small drop seems like a piece of cake.
 You cast your eyes over the garden beneath. It looks pretty ordinary- a wide, soft-looking mossy lawn with a few shrubs scattered here and there, with a few seasonal flowers arranged tastefully at the edges. You don't recognise it as normal //home// exactly, but you have pretty much begun to accept that whatever is going on here it is definitely //not// normal...//OR// home.
 From your vantage point on top of the roof, you can see that the house seems to be surrounded by grassy fields in all directions except for one slightly neglected looking country road winding out to the north at the back of the house. Going through the fields is definitely not an option- you already have a pretty poor sense of direction as it is, and you know that trying to make your way through the tall grasses would only result in getting lost. This is definitely //not// the sort of place you wanted to risk getting lost in.
@@ -700,8 +700,7 @@ ENDING 8: (if: $end8 is true)[MIRROR WORLD](else:)[??????]
 ENDING 9: (if: $end9 is true)[PARALLEL YOU-NIVERSE](else:)[??????]
 ENDING 10:(if: $end10 is true)[TRUE END](else:)[??????]
 
-(if: $end10 is false)
-(go-to: &quot;EPILOGUE&quot;)
+(if: $end10 is false)[(go-to: &quot;EPILOGUE&quot;)]
 </tw-passagedata>
 <tw-passagedata pid="21" name="nothing at all" tags="" position="248,607">//Siiiiiiiiiigh//. 
 You roll over and burrow comfortably into the duvet, relishing the warm feeling of the saturday morning sunlight on your face. You could swear that today your bed felt even comfier than usual-then again, it always does when you get the chance to take a long lie in. Its the weekend, that means for two whole days, no more catty Katie and her gang, no more Mrs. Gordon, no more Getting Started with Algebra, just two whole days of sweet, sweet freedom. //Mmmmmmmmmm~// 

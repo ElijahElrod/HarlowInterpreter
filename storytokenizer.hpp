@@ -32,6 +32,7 @@ class SectionToken
 class PassageTokenizer 
 {
     public:
+        PassageTokenizer();
         PassageTokenizer(string passage);
         SectionToken nextSection();
         bool typeChecker();

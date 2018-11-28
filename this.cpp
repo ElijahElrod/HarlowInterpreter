@@ -96,23 +96,29 @@ SectionToken PassageTokenizer::nextSection()
     // substrings fragments to find StoryGuides, blocks, text, and links
     if (passageLine.substr(cmdLocation, 2) == "[[")
     {
-        string nameOfPassage;
+        string nameOfPassage, redirectName;
         int nameStart = 0;
+        int varStart = 0;
         sectionStart = passageLine.find("[[", cmdLocation)+2;
         cmdLocation = passageLine.find("]]", sectionStart);
 
         innerSection = passageLine.substr(sectionStart, cmdLocation-sectionStart);
+        
         sectionType = LINK;
 
         if (innerSection.find("-&gt;", 0) != string::npos)
         {
             //innerSection = innerSection.substr(sectionStart, (innerSection.find("-&gt;", 0)-sectionStart));
+            int varName = innerSection.find("-&", 0);
+            
+            //cout << innerSection.at(sectionStart) << endl; 
+            redirectName = innerSection.substr(varStart, varName-varStart);
             nameStart = innerSection.find("-&gt;", 0) + 5;
             nameOfPassage = innerSection.substr(nameStart, cmdLocation-nameStart);
             //cout << "Debugging LINK" << endl;
             //cout << "The variable is : " << nameOfPassage << endl;
             cmdLocation += 2;
-            return SectionToken(passageLine.substr(sectionStart, (cmdLocation-2)-sectionStart), sectionType, innerSection, nameOfPassage);
+            return SectionToken(passageLine.substr(sectionStart, (cmdLocation-2)-sectionStart), sectionType, redirectName, nameOfPassage);
         }
         else
         {
@@ -269,9 +275,11 @@ SectionToken PassageTokenizer::nextSection()
 
     else
          {
-           sectionStart = passageLine.find("[", cmdLocation);
+           
+            sectionStart = passageLine.find("[", cmdLocation);
             cmdLocation = sectionStart + 1;
             int bracketCounter = 1;
+            
             
             
             cmdLocation++;
@@ -285,6 +293,7 @@ SectionToken PassageTokenizer::nextSection()
                 {
                     bracketCounter--;
                 }
+                
                 cmdLocation++;
             }
             sectionType = BLOCK;

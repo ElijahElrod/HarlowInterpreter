@@ -27,14 +27,14 @@ void callLink(SectionToken stok, vector<string>& links, vector<string>& redirect
      if (stok.getVarName() == stok.getVarStatus())
        {
           links.push_back(stok.getVarName());
-          redirectLinks.push_back(" ");
+          redirectLinks.push_back(stok.getVarName());
         }
       else
         {
           links.push_back(stok.getVarName()); 
           redirectLinks.push_back(stok.getVarStatus());
         }
-      cout << stok.getText();
+      cout << stok.getVarName();
 }
 
 void callBlock(SectionToken stok, bool flag1, bool& flag2)
@@ -100,11 +100,10 @@ void continueStory(vector<string>& links, vector<string> redirectLinks, string &
         cin >> op;
       }
 
-      if (redirectLinks.at(op - 1) == " ")
+      if (redirectLinks.at(op - 1) == links.at(op - 1))
         passToGo = links.at(op - 1);
       else
         passToGo = redirectLinks.at(op - 1);
     }
   }
-  
 }

@@ -57,9 +57,9 @@ int main()
       while (hasLinks(links))
       {
         links.clear();
+        redirectLinks.clear();
+        goToFlag = false;
         PassageTokenizer pt(passages.at(narrator.findPassageIndex(passToGo)));
-       
-
         while (pt.hasNextSection())
         {
           flag2 = false;
@@ -70,24 +70,30 @@ int main()
             callLink(stok, links, redirectLinks);
             break;
           case SET:
+          if (!goToFlag)
             narrator.setSetting(stok.getVarName(), stok.getVarStatus());
             break;
           case GOTO:
-            
+            callGoTo(stok, passageRedirect, goToFlag);
             break;
           case IF:
+          if (!goToFlag)
             callIf(narrator, stok, flag1);
             break;
           case ELSEIF:
+          if (!goToFlag)
             callElseIf(narrator, stok, flag1);
             break;
           case ELSE:
+          if (!goToFlag)
             callElse(flag1);
             break;
           case BLOCK:
+          if (!goToFlag)
             callBlock(stok, flag1, flag2);
             break;
           case TEXT:
+          if (!goToFlag)
             cout << stok.getText();
             break;
           default: cout << "  Unknown token:  ";

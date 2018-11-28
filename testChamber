@@ -1,0 +1,264 @@
+#include "storytokenizer.h"
+#include <cstring>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+// STORY TOKENIZER CLASS FUNCTIONS 
+//---------------------------------------------------------------------
+StoryTokenizer::StoryTokenizer(string story)
+{
+    theStory = story;
+    foundBegin = 0;
+    foundEnd = 0;
+    foundNameBegin = 0;
+    foundNameEnd = 0;
+}
+
+PassageToken StoryTokenizer::nextPassage()
+{
+    string passage, name;
+    foundBegin = theStory.find("<tw-passagedata ", foundEnd);
+
+    // </tw-passagedata is 17 characters long so we add 17 to include end tag
+    foundEnd = theStory.find("</tw-passagedata>", foundBegin) + 17;
+    passage = theStory.substr(foundBegin, foundEnd-foundBegin);
+
+    
+    foundNameBegin = passage.find("name=", foundNameEnd)+6;
+    for (int i = foundNameBegin; i < passage.length(); i++)
+    {
+        if (passage.at(i) == '"')
+        {
+            foundNameEnd = passage.find('"', foundNameBegin);
+            break;
+        }
+    }
+    name = passage.substr(foundNameBegin, foundNameEnd-foundNameBegin);
+    foundNameBegin = 0;
+    foundNameEnd = 0;
+    
+    return PassageToken(passage, name);
+}
+
+
+bool StoryTokenizer::hasNextPassage()
+{
+    // If .find fails it returns string::npos
+   if (theStory.find("<tw-passagedata ", foundEnd) != string::npos)
+        return true;
+   else
+        return false;
+}
+//---------------------------------------------------------------------
+
+
+// PASSAGE TOKENIZER CLASS FUNCTIONS
+//---------------------------------------------------------------------
+PassageTokenizer::PassageTokenizer(string passage)
+{
+    // constructs text to be tokenized and finds beginning after opening tag
+    passageLine = passage;
+    cmdLocation = passageLine.find(">") + 1;
+}
+
+
+SectionToken PassageTokenizer::nextSection()
+{
+    type_t sectionType;
+    
+    // substrings fragments to find commands, blocks, text, and links
+    if (passageLine.substr(cmdLocation, 2) == "[[")
+    {
+        sectionStart = passageLine.find("[[", cmdLocation);
+        cmdLocation = passageLine.find("]]", sectionStart) + 2;
+        sectionType = LINK;
+    }
+
+    else if (passageLine.substr(cmdLocation, 5) == "(set:")
+    {
+        sectionStart = passageLine.find("(set", cmdLocation);
+        cmdLocation = passageLine.find(")", sectionStart) + 1;
+
+        sectionType = SET;
+    }
+
+    else if (passageLine.substr(cmdLocation, 4) == "(if:")
+    {
+        sectionStart = passageLine.find("(if", cmdLocation);
+        cmdLocation = passageLine.find(")", sectionStart) + 1;
+
+        sectionType = IF;
+    }
+
+    else if (passageLine.substr(cmdLocation, 9) == "(else-if:")
+    {
+        sectionStart = passageLine.find("(else-if", cmdLocation);
+        cmdLocation = passageLine.find(")", sectionStart) + 1;
+
+        sectionType = ELSEIF;
+    }
+
+    else if (passageLine.substr(cmdLocation, 6) == "(else:")
+    {
+        sectionStart = passageLine.find("(else", cmdLocation);
+        cmdLocation = passageLine.find(")", sectionStart) + 1;
+
+        sectionType = ELSE;
+    }
+
+    else if (passageLine.substr(cmdLocation, 7) == "(go-to:")
+    {
+        sectionStart = passageLine.find("(go-to", cmdLocation);
+        cmdLocation = passageLine.find(")", sectionStart) + 1;
+
+        sectionType = GOTO;
+    }
+    
+    else if ((passageLine.substr(cmdLocation, 1) != "[") && passageLine.substr(cmdLocation, 1) != "(")
+    {
+
+        // If the beginning character is not ( or [, the token can't be a command, link, or block
+        // token must be text
+
+        sectionType = TEXT;
+        sectionStart = cmdLocation;
+        if ((passageLine.find("(", cmdLocation) == string::npos) && (passageLine.find("[", cmdLocation) == string::npos))
+            cmdLocation = passageLine.find("<", cmdLocation);
+        else if (passageLine.find("(", cmdLocation) > passageLine.find("[", cmdLocation))
+            cmdLocation = passageLine.find("[", cmdLocation);
+        else    
+            cmdLocation = passageLine.find("(", cmdLocation);
+
+        sectionType = TEXT;
+    }
+
+    else
+        {
+            foundBracket = true;
+            sectionStart = passageLine.find("[", cmdLocation);
+            cmdLocation = sectionStart + 1;
+            
+            while (foundBracket)
+            {
+                if ((passageLine.find("]", cmdLocation, 1) != string::npos) && (passageLine.find("]]",cmdLocation) != passageLine.find("]", cmdLocation)))
+                    {
+                        cmdLocation = passageLine.find("]", cmdLocation) + 1;
+                        foundBracket = false;
+                    }
+                else if ((passageLine.find("]]", cmdLocation, 2) != string::npos))
+                {
+                        cmdLocation = passageLine.find("]]", cmdLocation) + 2;
+                        if ((passageLine.find("]", cmdLocation, 1)  != string::npos) && (passageLine.find("]", cmdLocation) != passageLine.find("]]", cmdLocation)))
+                        {
+                            cmdLocation = passageLine.find("]", cmdLocation) + 1;
+                            foundBracket = false;
+                        }
+                        else
+                            foundBracket = true;
+                        
+                }
+                else if (passageLine.find("[[", cmdLocation, 2) != string::npos)
+                    {   
+                        cmdLocation = passageLine.find("]]", cmdLocation) + 2;
+                        foundBracket = true;
+                    }
+                else
+                    foundBracket = false;
+            }
+            sectionType = BLOCK;
+        }
+            
+
+    return SectionToken(passageLine.substr(sectionStart, cmdLocation-sectionStart), sectionType);
+}
+
+bool PassageTokenizer::hasNextSection()
+{   
+
+    // Looks for any commands present and if it finds a command, there must be a next section.
+    if (passageLine.find("(set:", cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.find("(display:", cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.find("go-to:", cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.find("[[",  cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.find("if:", cmdLocation) != string::npos)
+        return true;
+    else if(passageLine.find("[", cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.find("else-if:", cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.find("else:", cmdLocation) != string::npos)
+        return true;
+    else if (passageLine.substr(cmdLocation, 1) != "<")
+        return true;
+    else
+        return false;
+
+
+}
+//---------------------------------------------------------------------
+
+
+// PASSAGE TOKEN CLASS FUNCTIONS
+//----------------------------------------------------------------------
+PassageToken::PassageToken(string passage, string name)
+{
+   passageText = passage;
+   passageName = name;
+}
+
+//-----------------------------------------------------------------------
+
+
+// SECTION TOKEN CLASS FUNCTIONS
+//----------------------------------------------------------------------
+
+SectionToken::SectionToken(string secText, type_t secType)
+{
+    // constructs SectionToken using the text and type of each fragment.
+    sectionText = secText;
+    sectionType = secType;
+}
+
+
+string SectionToken::getText() const
+{
+    return sectionText;
+}
+
+type_t SectionToken::getType() const
+{
+    return sectionType;
+}
+//--------------------------------------------------------------------
+
+
+// StoryGuide CLASS FUNCTIONS
+//----------------------------------------------------------------------
+StoryGuide::StoryGuide() 
+{
+    unordered_map<string, bool> storySettings;
+    unordered_map<string, int> storyMap;
+}
+
+string StoryGuide::redirectToPassage(unordered_map<string, int> storyMap, string passage, vector<string> passages)
+{
+    int vectorIndex = findPassageIndex(storyMap, passage);
+    return passages.at(vectorIndex);
+}
+
+int StoryGuide::findPassageIndex(unordered_map<string, int> storyMap, string passage) const
+{
+    return storyMap[passage];
+}
+
+bool StoryGuide::checkSetting(unordered_map<string, bool> storySettings, string key) const
+{
+    return storySettings[key];
+}
+//----------------------------------------------------------------------

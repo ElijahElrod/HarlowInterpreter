@@ -6,7 +6,6 @@
 #include <vector>
 #include <unordered_map>
 
-
 using namespace std;
 
 enum type_t {LINK, SET, GOTO, IF, ELSEIF, ELSE, BLOCK, TEXT};
@@ -35,7 +34,6 @@ class PassageTokenizer
         PassageTokenizer();
         PassageTokenizer(string passage);
         SectionToken nextSection();
-        bool typeChecker();
         bool hasNextSection();
         bool hasLink();
     private:
@@ -84,15 +82,12 @@ class StoryGuide
         StoryGuide();
         void setSetting(string variable, string value);
         void setPassageMap(string name, int passNum);
-        void setPassageVector(PassageToken text);
         int findPassageIndex(string passage) const;
-        string redirectToPassage(string passage);
         string checkSetting(string varToCheck) const;
         
     protected:
         unordered_map<string, bool> storySettings;
         unordered_map<string, int> storyMap;
-        vector<PassageToken*> passageCollection;
         
 };
 

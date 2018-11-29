@@ -69,20 +69,6 @@ PassageTokenizer::PassageTokenizer(string passage)
 
 }
 
-/*
-bool PassageTokenizer::typeChecker()
-{
-    if (passageLine.substr(cmdLocation, 2) != "(g")
-        return true;
-    else if (passageLine.substr(cmdLocation, 2) != "(i")
-        return true;
-    else if (passageLine.substr(cmdLocation, 2) != "(e")
-        return true;
-    else if( passageLine.substr(cmdLocation, 2) != "(s")
-        return true;
-    else
-}
-*/
 
 /*
 THIS FUNCTION WILL REQUIRE THE MOST WORK. FUNCTON MUST IDENTIFY EACH TYPE OF SECTION TOKEN WHILE STORING EVERY LINK, SETTING EVERY VARIABLE
@@ -108,22 +94,17 @@ SectionToken PassageTokenizer::nextSection()
 
         if (innerSection.find("-&gt;", 0) != string::npos)
         {
-            //innerSection = innerSection.substr(sectionStart, (innerSection.find("-&gt;", 0)-sectionStart));
-            int varName = innerSection.find("-&", 0);
-            
-            //cout << innerSection.at(sectionStart) << endl; 
+            int varName = innerSection.find("-&", 0);   
             redirectName = innerSection.substr(varStart, varName-varStart);
+
             nameStart = innerSection.find("-&gt;", 0) + 5;
             nameOfPassage = innerSection.substr(nameStart, cmdLocation-nameStart);
-            //cout << "Debugging LINK" << endl;
-            //cout << "The variable is : " << nameOfPassage << endl;
+            
             cmdLocation += 2;
             return SectionToken(passageLine.substr(sectionStart, (cmdLocation-2)-sectionStart), sectionType, redirectName, nameOfPassage);
         }
         else
         {
-             //cout << "Debugging LINK" << endl;
-             //cout << "The variable is : " << innerSection << endl;
              cmdLocation += 2;
              return SectionToken(passageLine.substr(sectionStart, (cmdLocation-2)-sectionStart), sectionType, innerSection, innerSection);
         }
@@ -146,12 +127,6 @@ SectionToken PassageTokenizer::nextSection()
         varStatus = innerSection.substr(sectionSpace, cmdLocation-sectionSpace);
         varStatus = varStatus.substr(0, varStatus.length()-1);
 
-
-    
-     //cout << "Debugging Set" << endl;
-     //cout << "The variable is: " << varName << endl;
-     //cout << "It was set to: " << varStatus << endl;
-
         sectionType = SET;
         return SectionToken(innerSection, sectionType, varName, varStatus);
     }
@@ -171,10 +146,6 @@ SectionToken PassageTokenizer::nextSection()
         varStatus = varStatus.substr(0, varStatus.length()-1);
 
         sectionType = IF;
-
-        //cout << "Debugging IF" << endl;
-        //cout << "The variable is : " << varName  << endl;
-        //cout << "It was set to : " << varStatus << endl;
         return SectionToken(innerSection, sectionType, varName, varStatus);
     }
 
@@ -193,10 +164,6 @@ SectionToken PassageTokenizer::nextSection()
         varStatus = varStatus.substr(0, varStatus.length()-1);
 
         sectionType = ELSEIF;
-
-        //cout << "Debugging ELSE-IF" << endl;
-        //cout << "The variable is : "  << varName << endl;
-        //cout << "It was set to : "  << endl;
         return SectionToken(innerSection, sectionType, varName, varStatus);
     }
 
@@ -207,7 +174,7 @@ SectionToken PassageTokenizer::nextSection()
 
         sectionType = ELSE;
 
-        //cout << "Debugging ELSE" << endl;
+        
     }
 
     else if (passageLine.substr(cmdLocation, 7) == "(go-to:")
@@ -223,11 +190,7 @@ SectionToken PassageTokenizer::nextSection()
 
         sectionType = GOTO;
         return SectionToken(innerSection, sectionType, varName, varName);
-        
-
-        //cout << "Debugging GO-TO" << endl;
-        //cout << "The location is : " << varName << endl;
-        //cout << "It was set to : "  << endl;
+    
     }
     
     else if (((passageLine.substr(cmdLocation, 1) != "[") && passageLine.substr(cmdLocation, 1) != "("))
@@ -279,8 +242,6 @@ SectionToken PassageTokenizer::nextSection()
             sectionStart = passageLine.find("[", cmdLocation);
             cmdLocation = sectionStart + 1;
             int bracketCounter = 1;
-            
-            
             
             cmdLocation++;
             while (bracketCounter != 0)
@@ -391,18 +352,6 @@ StoryGuide::StoryGuide()
 void StoryGuide::setPassageMap(string name, int passNum)
 {
     storyMap.insert(make_pair(name, passNum));
-}
-
-void StoryGuide::setPassageVector(PassageToken text)
-{
-    //passageCollection.emplace_back(text);
-}
-
-string StoryGuide::redirectToPassage(string passage)
-{
-    int vectorIndex = findPassageIndex(passage);
-    return passage;
-    //passageCollection.at(vectorIndex);
 }
 
 int StoryGuide::findPassageIndex(string passage) const

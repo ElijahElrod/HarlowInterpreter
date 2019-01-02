@@ -70,10 +70,6 @@ PassageTokenizer::PassageTokenizer(string passage)
 }
 
 
-/*
-THIS FUNCTION WILL REQUIRE THE MOST WORK. FUNCTON MUST IDENTIFY EACH TYPE OF SECTION TOKEN WHILE STORING EVERY LINK, SETTING EVERY VARIABLE
-CHECKING EVERY CONDITION, AND EXECUTING EVERY GOTO.
-*/
 SectionToken PassageTokenizer::nextSection()        
 {
     type_t sectionType;
